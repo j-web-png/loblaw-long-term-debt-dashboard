@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loblaw Long-Term Debt Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f5f8;
+  color: #172033;
+  margin: 0;
+}
+header {
+  background: #142d24;
+  color: white;
+  padding: 28px 6%;
+}
+main {
+  max-width: 1100px;
+  margin: 25px auto;
+  padding: 0 18px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 16px;
+}
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px #0000000c;
+}
+.metric {
+  font-size: 28px;
+  font-weight: bold;
+  color: #16734a;
+}
+.chart {
+  height: 310px;
+}
+small, footer { color: #5d6878; }
+a { color: #176d50; }
+footer { padding: 25px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Loblaw Long-Term Debt Dashboard</h1>
+  <p>Comparative financial analysis: Q1 and Q2, 2025–2026</p>
+  <small style="color:#d9e8df">
+    Educational project | CAD millions | Public financial data
+  </small>
+</header>
+
+<main>
+  <section class="grid">
+    <div class="card">
+      <small>Q1 year-over-year change</small>
+      <div class="metric" id="q1">-23.71%</div>
+    </div>
+    <div class="card">
+      <small>Q2 year-over-year change</small>
+      <div class="metric" id="q2">-27.00%</div>
+    </div>
+    <div class="card">
+      <small>Q2 2026 reported debt</small>
+      <div class="metric">$5,912M</div>
+    </div>
+    <div class="card">
+      <small>Number of observations</small>
+      <div class="metric">4</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1. Debt comparison by quarter</h2>
+    <p>Reported non-current long-term debt, CAD millions.</p>
+    <div class="chart"><canvas id="barChart"></canvas></div>
+  </section>
+
+  <section class="card">
+    <h2>2. Debt movement over time</h2>
+    <p>Four selected quarter-end reporting dates.</p>
+    <div class="chart"><canvas id="lineChart"></canvas></div>
+  </section>
+
+  <section class="card">
+    <h2>3. Year-over-year percentage change</h2>
+    <p>Negative values represent lower reported debt.</p>
+    <div class="chart"><canvas id="changeChart"></canvas></div>
+  </section>
+
+  <section class="card">
+    <h2>Key findings</h2>
+    <ul>
+      <li>Q1 reported debt was approximately 23.71%
+          lower year over year.</li>
+      <li>Q2 reported debt was approximately 27%
+          lower year over year.</li>
+      <li>PC Financial held-for-sale classification
+          affects comparability.</li>
+      <li>Lower reported debt does not necessarily
+          represent cash debt repayment.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Recommendations</h2>
+    <ul>
+      <li>Prioritize sustainable repayment of
+          higher-interest debt.</li>
+      <li>Monitor debt-to-EBITDA and liquidity.</li>
+      <li>Maintain strong operating cash flow.</li>
+      <li>Separate debt repayments from
+          accounting reclassifications.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Limitations</h2>
+    <ul>
+      <li>Only four observations are included.</li>
+      <li>Accounting reclassifications affect
+          year-over-year comparability.</li>
+      <li>The charts do not establish causation.</li>
+      <li>Quarter-end balances do not show all
+          borrowing and repayment activity.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Data and methodology</h2>
+    <p>
+      Source: Loblaw Companies Limited quarterly
+      financial reports. Values are in millions
+      of Canadian dollars.
+    </p>
+    <p>
+      <a href="data.csv" download>Download the dataset (CSV)</a>
+    </p>
+    <p>
+      <a href="sources-and-methodology.md">
+      Sources and methodology</a>
+    </p>
+    <p>
+      This is an independent educational project.
+      It is not affiliated with or endorsed by
+      Loblaw Companies Limited.
+    </p>
+  </section>
+</main>
+
+<footer>
+  Student financial analytics project | 2026
+</footer>
+
+<script>
+const quarters = ["Q1", "Q2"];
+const debt2025 = [8054, 8099];
+const debt2026 = [6144, 5912];
+
+const pct = quarters.map((q, i) =>
+  ((debt2026[i] - debt2025[i]) /
+  debt2025[i]) * 100
+);
+
+document.getElementById("q1").textContent =
+  pct[0].toFixed(2) + "%";
+document.getElementById("q2").textContent =
+  pct[1].toFixed(2) + "%";
+
+const common = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: "bottom" }
+  }
+};
+
+new Chart(document.getElementById("barChart"), {
+  type: "bar",
+  data: {
+    labels: quarters,
+    datasets: [
+      {
+        label: "2025",
+        data: debt2025,
+        backgroundColor: "#9aa8b5"
+      },
+      {
+        label: "2026",
+        data: debt2026,
+        backgroundColor: "#19845b"
+      }
+    ]
+  },
+  options: {
+    ...common,
+    scales: {
+      y: { title: {
+        display: true,
+        text: "CAD millions"
+      }, beginAtZero: true }
+    }
+  }
+});
+
+new Chart(document.getElementById("lineChart"), {
+  type: "line",
+  data: {
+    labels: ["Q1 2025","Q2 2025",
+             "Q1 2026","Q2 2026"],
+    datasets: [{
+      label: "Long-term debt",
+      data: [8054,8099,6144,5912],
+      borderColor: "#19845b",
+      backgroundColor: "#19845b",
+      tension: 0.2,
+      pointRadius: 5
+    }]
+  },
+  options: {
+    ...common,
+    scales: {
+      y: { title: {
+        display: true,
+        text: "CAD millions"
+      }, beginAtZero: true }
+    }
+  }
+});
+
+new Chart(document.getElementById("changeChart"), {
+  type: "bar",
+  data: {
+    labels: quarters,
+    datasets: [{
+      label: "Year-over-year change (%)",
+      data: pct,
+      backgroundColor: ["#4d9a76","#176d50"]
+    }]
+  },
+  options: {
+    ...common,
+    scales: {
+      y: { title: {
+        display: true,
+        text: "Percentage change"
+      }}
+    }
+  }
+});
+</script>
+</body>
+</html>
